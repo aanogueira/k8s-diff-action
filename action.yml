@@ -1,0 +1,15 @@
+name: 'Kubernetes Kustomize Resources Diff'
+description: 'Get the diff of the resources applied on the cluster using kustomize'
+inputs:
+  folder:  # id of input
+    description: 'Folder from where to run the diff'
+    required: true
+    default: '.'
+outputs:
+  diff: # id of output
+    description: 'Resources diff'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.folder }}
