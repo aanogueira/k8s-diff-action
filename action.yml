@@ -1,10 +1,22 @@
 name: 'Kubernetes Kustomize Resources Diff'
 description: 'Get the diff of the resources applied on the cluster using kustomize'
 inputs:
-  folder:  # id of input
+  folder:
     description: 'Folder from where to run the diff'
     required: true
     default: '.'
+  sa-token:
+    description: 'Service account token (b64 decoded)'
+    required: true
+    default: ''
+  server-url:
+    description: 'Server endpoint URL'
+    required: true
+    default: ''
+  server-ca:
+    description: 'Server CA (b64 encoded)'
+    required: true
+    default: ''
 outputs:
   diff: # id of output
     description: 'Resources diff'
@@ -13,3 +25,6 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.folder }}
+    - ${{ inputs.server-url }}
+    - ${{ inputs.server-ca }}
+    - ${{ inputs.sa-token }}
