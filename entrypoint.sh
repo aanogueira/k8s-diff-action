@@ -7,7 +7,7 @@ kubectl config set-context local --cluster local --user actions-runner --namespa
 kubectl config use-context local
 
 echo "diff<<EOF" >> $GITHUB_OUTPUT
-echo "$(for var in $(kubectl kustomize --context local $1 | grep '{' | awk -F"[{}]" '{print$2}'); do \
+echo "$(for var in $(kubectl kustomize --context local $1 | grep -o '{[^}]*}' | awk -F"[{}]" '{print$2}'); do \
     unset $var && export $var=$(\
       kubectl get --context local cm cluster-values -n flux-system -o yaml | \
       grep $var | \
