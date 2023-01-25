@@ -5,10 +5,8 @@ COPY entrypoint.sh /entrypoint.sh
 # https://github.com/kubernetes-sigs/kustomize/releases
 ARG KUSTOMIZE_VERSION=4.5.7
 
-ENV KUBECTL_EXTERNAL_DIFF="colordiff -N -u"
-
 # split layers into distinct components
-RUN apk add --no-cache --upgrade ca-certificates curl tar colordiff \
+RUN apk add --no-cache --upgrade ca-certificates curl tar \
   && apk add kubectl helm envsubst --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 # Install Kustomize
