@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
-echo $3 | base64 -d > /cert.ca
-kubectl config set-cluster local --server $2 --certificate-authority /server.ca --embed-certs=true
+echo $3 | base64 -d > server.ca
+kubectl config set-cluster local --server $2 --certificate-authority server.ca --embed-certs=true
 kubectl config set-credentials actions-runner --token $4
 kubectl config set-context local --cluster local --user actions-runner --namespace default
 kubectl config use-context local
