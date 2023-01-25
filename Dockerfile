@@ -1,5 +1,7 @@
 FROM alpine:3.17.1
 
+COPY entrypoint.sh /entrypoint.sh
+
 # https://github.com/kubernetes-sigs/kustomize/releases
 ARG KUSTOMIZE_VERSION=4.5.7
 
