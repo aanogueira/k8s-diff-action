@@ -7,9 +7,9 @@ else
 fi
 
 if [ $3 -eq '']; then
-  echo $INPUT_SERVER_CA > server.ca
+  cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt > ca.crt
 else
-  echo $3 | base64 -d > server.ca
+  echo $3 | base64 -d > ca.crt
 fi
 
 if [ $4 -eq '']; then
@@ -18,7 +18,7 @@ else
   INPUT_SA_TOKEN=$4
 fi
 
-kubectl config set-cluster local --server $INPUT_SERVER_URL --certificate-authority server.ca --embed-certs=true
+kubectl config set-cluster local --server $INPUT_SERVER_URL --certificate-authority ca.crt --embed-certs=true
 kubectl config set-credentials actions-runner --token $INPUT_SA_TOKEN
 kubectl config set-context local --cluster local --user actions-runner --namespace default
 kubectl config use-context local
