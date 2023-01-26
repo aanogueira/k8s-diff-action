@@ -10,15 +10,15 @@ Used to output the diff of the resources applied on a cluster.
 
 `server-url`
 
-**Required** The URL of the Kubernetes server. Default `""`.
+**Optional** The URL of the Kubernetes server. Default `""`.
 
 `server-ca`
 
-**Required** The CA of the Kubernetes server. Default `""`.
+**Optional** The CA of the Kubernetes server. Default `""`.
 
 `sa-token`
 
-**Required** The token used to connect to the Kubernetes server. Default `""`.
+**Optional** The token used to connect to the Kubernetes server. Default `""`.
 
 ## Outputs
 
