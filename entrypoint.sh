@@ -24,6 +24,7 @@ if [ "$5" -eq '' ]; then
   kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace default
   kubectl config use-context "$context"
 else
+  mkdir -p ~/.kube
   echo "$5" | base64 -d > ~/.kube/config
   context=$(echo "$1" | cut -d'/' -f2)
   kubectl config use-context "$context"
