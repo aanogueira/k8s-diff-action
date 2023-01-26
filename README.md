@@ -8,6 +8,10 @@ Used to output the diff of the resources applied on a cluster.
 
 **Required** The name of the folder where the action will run. Default `"."`.
 
+`kubeconfig`
+
+**Optional** Kubernetes config file used connect to the server. Default `""`.
+
 `server-url`
 
 **Optional** The URL of the Kubernetes server. Default `""`.
@@ -35,4 +39,5 @@ with:
   server-url: https://example.local
   server-ca: <ca_b64_encoded>
   sa-token: <token_b64_decoded>
+  kubeconfig: <file_b64_encoded>
 ```
