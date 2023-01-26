@@ -7,13 +7,13 @@ else
 fi
 
 if [ $3 -eq '']; then
-  cat /var/run/secrets/kubernetes.io/serviceaccount/ca.crt > ca.crt
+  cat /work/ca.crt > ca.crt
 else
   echo $3 | base64 -d > ca.crt
 fi
 
 if [ $4 -eq '']; then
-  INPUT_SA_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+  INPUT_SA_TOKEN=$(cat /work/token)
 else
   INPUT_SA_TOKEN=$4
 fi
