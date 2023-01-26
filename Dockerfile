@@ -6,8 +6,8 @@ COPY entrypoint.sh /entrypoint.sh
 ARG KUSTOMIZE_VERSION=4.5.7
 
 # split layers into distinct components
-RUN apk add --no-cache --upgrade ca-certificates curl tar \
-  && apk add kubectl helm envsubst --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
+RUN apk add --no-cache --upgrade ca-certificates curl tar perl \
+  && apk add kubectl helm --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 # Install Kustomize
 RUN mkdir /tmp/kustomize \

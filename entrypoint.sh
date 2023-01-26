@@ -38,7 +38,7 @@ echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '{[^}]*}'
     awk '{sub(/:/," ");$1=$1;print $2}' | \
     tr -d " " | tr -d '"'); \
   done; \
-  kubectl --context $context kustomize $1 | envsubst | \
+  kubectl --context $context kustomize $1 | perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge' | \
   kubectl --context $context diff -f - \
 )" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
