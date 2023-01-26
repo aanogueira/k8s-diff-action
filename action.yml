@@ -7,15 +7,15 @@ inputs:
     default: '.'
   sa-token:
     description: 'Service account token (b64 decoded)'
-    required: true
+    required: false
     default: ''
   server-url:
     description: 'Server endpoint URL'
-    required: true
+    required: false
     default: ''
   server-ca:
     description: 'Server CA (b64 encoded)'
-    required: true
+    required: false
     default: ''
 outputs:
   diff: # id of output

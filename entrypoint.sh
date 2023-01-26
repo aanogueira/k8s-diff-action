@@ -1,8 +1,25 @@
 #!/bin/sh -l
 
-echo $3 | base64 -d > server.ca
-kubectl config set-cluster local --server $2 --certificate-authority server.ca --embed-certs=true
-kubectl config set-credentials actions-runner --token $4
+if [ $2 -eq '' ]; then
+  INPUT_SERVER_URL=$(echo $SERVER_URL)
+else
+  INPUT_SERVER_URL=$2
+fi
+
+if [ $3 -eq '']; then
+  echo $INPUT_SERVER_CA > server.ca
+else
+  echo $3 | base64 -d > server.ca
+fi
+
+if [ $4 -eq '']; then
+  INPUT_SA_TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+else
+  INPUT_SA_TOKEN=$4
+fi
+
+kubectl config set-cluster local --server $INPUT_SERVER_URL --certificate-authority server.ca --embed-certs=true
+kubectl config set-credentials actions-runner --token $INPUT_SA_TOKEN
 kubectl config set-context local --cluster local --user actions-runner --namespace default
 kubectl config use-context local
 
