@@ -31,14 +31,14 @@ else
 fi
 
 echo "diff<<EOF" >> "$GITHUB_OUTPUT"
-echo "$(for var in $(kubectl --context "$context" kustomize "$1" | grep -o '{[^}]*}' | awk -F"[{}]" '{print$2}'); do \
-  unset "$var" && export "$var"="$(\
-    kubectl --context "$context" get cm cluster-values -n flux-system -o yaml | \
-    grep "$var" | \
-    awk '{sub(/:/, );$1=$1;print $2}' | \
-    tr -d " " | tr -d '"')"; \
+echo "$(for var in $(kubectl --context $context kustomize $1 | grep '{' |awk -F"[{}]" '{print$2}'); do \
+  unset $var && export $var=$(\
+    kubectl --context $context get cm cluster-values -n flux-system -o yaml | \
+    grep $var | \
+    awk '{sub(/:/," ");$1=$1;print $2}' | \
+    tr -d " "); \
   done; \
-  kubectl --context "$context" kustomize "$1" | envsubst | \
-  kubectl --context "$context" diff -f -\
+  kubectl --context $context kustomize $1 | envsubst | \
+  kubectl --context $context diff -f - -\
 )" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
