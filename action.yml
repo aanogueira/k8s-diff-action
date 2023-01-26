@@ -29,7 +29,7 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.folder }}
-    - ${{ inputs.kubeconfig }}
     - ${{ inputs.server-url }}
     - ${{ inputs.server-ca }}
     - ${{ inputs.sa-token }}
+    - ${{ inputs.kubeconfig }}
