@@ -64,7 +64,7 @@ fi
 
 echo "INFO - Running resources diff"
 echo "diff<<EOF" >> "$GITHUB_OUTPUT"
-echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '{[^}]*}' | awk -F"[{}]" '{print$2}'); do \
+echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '${[^}]*}' | awk -F"[{}]" '{print$2}'); do \
   unset $var && export $var=$(\
     kubectl --context $context get cm cluster-values -n flux-system -o yaml | \
     grep $var | \
