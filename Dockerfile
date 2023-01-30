@@ -6,7 +6,7 @@ COPY entrypoint.sh /entrypoint.sh
 ARG KUSTOMIZE_VERSION=4.5.7
 
 # https://github.com/instrumenta/kubeval/releases
-ARG KUSTOMIZE_VERSION=v0.16.1
+ARG KUBEVAL_VERSION=0.16.1
 
 # split layers into distinct components
 RUN apk add --no-cache --upgrade ca-certificates curl tar perl yq \
@@ -24,7 +24,7 @@ RUN mkdir /tmp/kustomize \
 # Install Kubeval
 RUN mkdir /tmp/kubeval \
 && curl -s -L -o /tmp/kubeval/kubeval.tar.gz \
-  https://github.com/instrumenta/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz \
+  https://github.com/instrumenta/kubeval/releases/download/v${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz \
   && tar -xzf /tmp/kubeval/kubeval.tar.gz -C /tmp/kubeval \
   && mv /tmp/kubeval/kubeval /usr/local/bin \
   && chmod +x /usr/local/bin/kubeval \
