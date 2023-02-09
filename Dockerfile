@@ -44,4 +44,4 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 # Install python dependencies
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
