@@ -79,6 +79,6 @@ echo "EOF" >> "$GITHUB_OUTPUT"
 echo "INFO - Running resources diff"
 resources_diff=""
 for file in $(/bin/ls $kustomize_path | grep -v kustomization.yaml); do \
-  resources_diff="$resources_diff\n$(python /Users/aanogueira/SteelEye/github/k8s-diff-action/main.py $PWD/$kustomize_path/$file $PWD/sources)"; \
+  resources_diff="$resources_diff\n$(python3 /app/main.py $PWD/$1/$file $PWD/$6)"; \
 done
 echo "resources_diff=$(echo $resources_diff)" >> "$GITHUB_OUTPUT"
