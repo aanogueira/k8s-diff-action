@@ -21,7 +21,7 @@ RUN apk add --no-cache --upgrade ca-certificates curl tar perl yq \
 # Install Kustomize
 RUN mkdir /tmp/kustomize \
   && curl -s -L -o /tmp/kustomize/kustomize.tar.gz \
-  https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz \
+  "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
   && tar -xzf /tmp/kustomize/kustomize.tar.gz -C /tmp/kustomize \
   && mv /tmp/kustomize/kustomize /usr/local/bin \
   && chmod +x /usr/local/bin/kustomize \
@@ -30,7 +30,7 @@ RUN mkdir /tmp/kustomize \
 # Install Kubeval
 RUN mkdir /tmp/kubeval \
 && curl -s -L -o /tmp/kubeval/kubeval.tar.gz \
-  https://github.com/instrumenta/kubeval/releases/download/v${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz \
+  "https://github.com/instrumenta/kubeval/releases/download/v${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz" \
   && tar -xzf /tmp/kubeval/kubeval.tar.gz -C /tmp/kubeval \
   && mv /tmp/kubeval/kubeval /usr/local/bin \
   && chmod +x /usr/local/bin/kubeval \
