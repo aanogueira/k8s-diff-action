@@ -4,9 +4,9 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY entrypoint.sh /app/entrypoint.sh
-COPY requirements.txt /app/requirements.txt
-COPY main.py /app/main.py
+COPY entrypoint.sh entrypoint.sh
+COPY requirements.txt requirements.txt
+COPY main.py main.py
 
 # https://github.com/kubernetes-sigs/kustomize/releases
 ARG KUSTOMIZE_VERSION=4.5.7
@@ -44,4 +44,4 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 # Install python dependencies
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
