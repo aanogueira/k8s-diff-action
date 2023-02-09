@@ -24,7 +24,7 @@ find . -type f -name kustomization.yaml -print0 | while IFS= read -r -d $'\0' fi
     echo "INFO - Validating kustomization $(dirname $file)"
     kustomize build $(dirname $file) | \
       kubeval --ignore-missing-schemas --strict --additional-schema-locations=file:///tmp/flux-crd-schemas
-    if [ $PIPESTATUS[0] -ne 0 ]; then
+    if [ $PIPESTATUS[0] != 0 ]; then
       exit 1
     fi
 done
@@ -75,7 +75,7 @@ echo "EOF" >> "$GITHUB_OUTPUT"
 
 echo "INFO - Running resources diff"
 resources_diff=""
-for file in $(/bin/ls $kustomize_path | grep -v kustomization.yaml); do \
-  resources_diff="$resources_diff\n$(python3 /app/main.py $PWD/$1/$file $PWD/$6)"; \
+for file in $(/bin/ls $1 | grep -v kustomization.yaml); do \
+  resources_diff="$resources_diff\n$(python3 /app/main.py $1/$file $6)"; \
 done
 echo "resources_diff=$(echo $resources_diff)" >> "$GITHUB_OUTPUT"
