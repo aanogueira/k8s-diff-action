@@ -71,7 +71,12 @@ echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '${[^}]*}
     awk '{sub(/:/," ");$1=$1;print $2}' | \
     tr -d " " | tr -d '"'); \
   done; \
+  echo "--- HELM RELEASE DIFF---"; \
   kubectl --context $context kustomize $1 | perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge' | \
-  kubectl --context $context diff -f - \
+  kubectl --context $context diff -f -; \
+  echo "--- HELM RESOURCES DIFF---"; \
+  for file in $(/bin/ls $1 | grep -v kustomization.yaml); do \
+    python3 /app/main.py $PWD/$1/$file $PWD/$6; \
+  done \
 )" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"

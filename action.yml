@@ -1,10 +1,17 @@
 name: 'Kubernetes Kustomize Resources Diff'
 description: 'Get the diff of the resources applied on the cluster using kustomize'
+branding:
+  icon: terminal
+  color: gray-dark
 inputs:
-  folder:
-    description: 'Folder from where to run the diff'
+  kustomize_folder:
+    description: 'Folder from where kustomization.yaml resides'
     required: true
     default: '.'
+  sources_folder:
+    description: 'Folder from where helm sources resides'
+    required: false
+    default: 'sources'
   kubeconfig:
     description: 'Config to connect to kubernetes cluster (b64 encoded)'
     required: false
@@ -28,8 +35,9 @@ runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
-    - ${{ inputs.folder }}
+    - ${{ inputs.kustomize_folder }}
     - ${{ inputs.server-url }}
     - ${{ inputs.server-ca }}
     - ${{ inputs.sa-token }}
     - ${{ inputs.kubeconfig }}
+    - ${{ inputs.sources_folder }}

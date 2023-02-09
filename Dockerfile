@@ -1,6 +1,12 @@
 FROM alpine:3.17.1
 
-COPY entrypoint.sh /entrypoint.sh
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY entrypoint.sh entrypoint.sh
+COPY requirements.txt requirements.txt
+COPY main.py main.py
 
 # https://github.com/kubernetes-sigs/kustomize/releases
 ARG KUSTOMIZE_VERSION=4.5.7
@@ -30,4 +36,12 @@ RUN mkdir /tmp/kubeval \
   && chmod +x /usr/local/bin/kubeval \
   && rm -rf /tmp/kubeval
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Install python an pip
+RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN python3 -m ensurepip
+RUN pip3 install --no-cache --upgrade pip setuptools
+
+# Install python dependencies
+RUN pip3 install -r requirements.txt
+
+ENTRYPOINT ["entrypoint.sh"]

@@ -4,9 +4,13 @@ Used to output the diff of the resources applied on a cluster.
 
 ## Inputs
 
-`folder`
+`kustomize_folder`
 
-**Required** The name of the folder where the action will run. Default `"."`.
+**Required** The name of the folder where `kustomization.yaml` resides. Default `"."`.
+
+`sources_folder`
+
+**Optional** The name of the folder where the helm sources resides. Default `"sources"`.
 
 `kubeconfig`
 
@@ -35,7 +39,8 @@ The resource diffs found.
 ```yaml
 uses: actions/k8s-Kustomize-diff-action@v1
 with:
-  folder: example/folder
+  kustomize_folder: example/folder
+  sources_folder: sources
   server-url: https://example.local
   server-ca: <ca_b64_encoded>
   sa-token: <token_b64_decoded>
