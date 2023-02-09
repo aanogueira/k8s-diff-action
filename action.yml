@@ -29,8 +29,10 @@ inputs:
     required: false
     default: ''
 outputs:
-  diff: # id of output
-    description: 'Resources diff'
+  releases_diff:
+    description: 'Helm Release diff'
+  resources_diff:
+    description: 'Helm Resources diff'
 runs:
   using: 'docker'
   image: 'Dockerfile'

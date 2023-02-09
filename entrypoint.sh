@@ -62,8 +62,8 @@ else
   kubectl config use-context "$context"
 fi
 
-echo "INFO - Running resources diff"
-echo "diff<<EOF" >> "$GITHUB_OUTPUT"
+echo "INFO - Running releases diff"
+echo "releases_diff<<EOF" >> "$GITHUB_OUTPUT"
 echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '${[^}]*}' | awk -F"[{}]" '{print$2}'); do \
   unset $var && export $var=$(\
     kubectl --context $context get cm cluster-values -n flux-system -o yaml | \
@@ -71,12 +71,14 @@ echo "$(for var in $(kubectl --context $context kustomize $1 | grep -o '${[^}]*}
     awk '{sub(/:/," ");$1=$1;print $2}' | \
     tr -d " " | tr -d '"'); \
   done; \
-  echo "--- HELM RELEASE DIFF---"; \
   kubectl --context $context kustomize $1 | perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge' | \
   kubectl --context $context diff -f -; \
-  echo "--- HELM RESOURCES DIFF---"; \
-  for file in $(/bin/ls $1 | grep -v kustomization.yaml); do \
-    python3 /app/main.py $PWD/$1/$file $PWD/$6; \
-  done \
 )" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
+
+echo "INFO - Running resources diff"
+resources_diff=""
+for file in $(/bin/ls $kustomize_path | grep -v kustomization.yaml); do \
+  resources_diff="$resources_diff\n$(python /Users/aanogueira/SteelEye/github/k8s-diff-action/main.py $PWD/$kustomize_path/$file $PWD/sources)"; \
+done
+echo "resources_diff=$(echo $resources_diff)" >> "$GITHUB_OUTPUT"
