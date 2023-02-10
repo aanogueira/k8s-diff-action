@@ -1,17 +1,17 @@
 #!/bin/sh -l
 
-if [ "$5" -eq '' ]; then
-  if [ "$2" -eq '' ]; then
+if [ "$5" = '' ]; then
+  if [ "$2" = '' ]; then
     echo "Missing 'server-url' parameter!"
     exit 1
   fi
 
-  if [ "$3" -eq '' ]; then
+  if [ "$3" = '' ]; then
     echo "Missing 'server-ca' parameter!"
     exit 1
   fi
 
-  if [ "$4" -eq '' ]; then
+  if [ "$4" = '' ]; then
     echo "Missing 'sa-token' parameter!"
     exit 1
   fi
@@ -21,7 +21,7 @@ if [ "$5" -eq '' ]; then
   context="local"
   kubectl config set-cluster "$context" --server "$2" --certificate-authority ca.crt --embed-certs=true
   kubectl config set-credentials actions-runner --token "$4"
-  if [ $(echo "$1" | cut -d'/' -f1) -eq 'platform' || $(echo "$1" | cut -d'/' -f1) -eq 'infrastructure' ]; then
+  if [ $(echo "$1" | cut -d'/' -f1) = 'platform' || $(echo "$1" | cut -d'/' -f1) = 'infrastructure' ]; then
     kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace "data-platform"
   else
     kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace $(echo "$1" | cut -d'/' -f1)
