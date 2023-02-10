@@ -21,7 +21,11 @@ if [ "$5" -eq '' ]; then
   context="local"
   kubectl config set-cluster "$context" --server "$2" --certificate-authority ca.crt --embed-certs=true
   kubectl config set-credentials actions-runner --token "$4"
-  kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace default
+  if [ $(echo "$1" | cut -d'/' -f1) -eq 'platform' || $(echo "$1" | cut -d'/' -f1) -eq 'infrastructure' ]; then
+    kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace "data-platform"
+  else
+    kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace $(echo "$1" | cut -d'/' -f1)
+  fi
   kubectl config use-context "$context"
 else
   mkdir -p ~/.kube
