@@ -95,19 +95,17 @@ def add_helm_repo(chart_repo, chart_url, secret=None):
 
 def get_helm_diff(name, chart_repo, chart_name, chart_version, namespace, values):
     values_command = ['echo', values]
-    substr_command = [
-        'perl', '-pe', 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge']
-    release_command = ['helm', 'template', name, f'{chart_repo}/{chart_name}',
-                       '--version', chart_version, '-n', namespace, '--skip-tests', '--no-hooks', '-f', '-']
-    diff_command = ['kubectl', 'diff', '--server-side=false', '-f', '-']
+    substr_command = "perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge'"
+    release_command = f"helm template name {chart_repo}/{chart_name} --version chart_version -n namespace --skip-tests --no-hooks -f -"
+    diff_command = "kubectl diff --server-side=false -f -"
 
     values = subprocess.Popen(values_command, stdout=subprocess.PIPE)
     substr = subprocess.Popen(
-        substr_command, stdin=values.stdout, stdout=subprocess.PIPE)
+        substr_command, stdin=values.stdout, stdout=subprocess.PIPE, shell=True)
     release = subprocess.Popen(
-        release_command, stdin=substr.stdout, stdout=subprocess.PIPE)
+        release_command, stdin=substr.stdout, stdout=subprocess.PIPE, shell=True)
     diff = subprocess.Popen(
-        diff_command, stdin=release.stdout, stdout=subprocess.PIPE)
+        diff_command, stdin=release.stdout, stdout=subprocess.PIPE, shell=True)
     values.stdout.close()
     substr.stdout.close()
     release.stdout.close()
