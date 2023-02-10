@@ -1,6 +1,10 @@
 FROM alpine:3.17.1
 
-ENV PYTHONUNBUFFERED=1
+# https://github.com/kubernetes-sigs/kustomize/releases
+ARG KUSTOMIZE_VERSION=4.5.7
+
+# https://github.com/instrumenta/kubeval/releases
+ARG KUBEVAL_VERSION=0.16.1
 
 WORKDIR /app
 
@@ -8,11 +12,21 @@ COPY entrypoint.sh entrypoint.sh
 COPY requirements.txt requirements.txt
 COPY main.py main.py
 
-# https://github.com/kubernetes-sigs/kustomize/releases
-ARG KUSTOMIZE_VERSION=4.5.7
+ENV PYTHONUNBUFFERED=1
 
-# https://github.com/instrumenta/kubeval/releases
-ARG KUBEVAL_VERSION=0.16.1
+ENV USER=docker
+ENV UID=12345
+ENV GID=23456
+
+RUN addgroup --gid "$GID" "$USER" && \
+    adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "$(pwd)" \
+    --ingroup "$USER" \
+    --no-create-home \
+    --uid "$UID" \
+    "$USER"
 
 # split layers into distinct components
 RUN apk add --no-cache --upgrade ca-certificates curl tar perl yq \
