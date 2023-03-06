@@ -101,7 +101,7 @@ def get_helm_diff(name, chart_repo, chart_name, chart_version, namespace, values
 
     values = subprocess.Popen(values_command, stdout=subprocess.PIPE)
     substr = subprocess.Popen(
-        substr_command, stdin=values.stdout, stdout=subprocess.PIPE, shell=True)
+        substr_command, stdin=values.stdout, stdout=subprocess.PIPE, shell=True, env=os.environ.copy())
     release = subprocess.Popen(
         release_command, stdin=substr.stdout, stdout=subprocess.PIPE, shell=True)
     diff = subprocess.Popen(
