@@ -97,7 +97,7 @@ def get_helm_diff(name, chart_repo, chart_name, chart_version, namespace, values
     values_command = ['echo', values]
     substr_command = "perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge'"
     release_command = f"helm template {name} {chart_repo}/{chart_name} --version {chart_version} -n {namespace} --skip-tests --no-hooks -f -"
-    diff_command = "kubectl diff --server-side=false -f -"
+    diff_command = f"kubectl diff --server-side=false -n {namespace} -f -"
 
     values = subprocess.Popen(values_command, stdout=subprocess.PIPE)
     substr = subprocess.Popen(

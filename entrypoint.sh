@@ -36,6 +36,7 @@ fi
 
 echo "INFO - Running releases diff"
 echo "releases_diff<<EOF" >> "$GITHUB_OUTPUT"
+
 for var in $(kubectl --context $context kustomize "$1" | grep -o '${[^}]*}' | awk -F"[{}]" '{print$2}'); do
     unset "$var"
     export "$var=$(kubectl --context "$context" get cm cluster-values -n flux-system -o yaml |
@@ -46,14 +47,24 @@ done
 diff_output=$(kubectl --context "$context" kustomize "$1" |
 perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge' |
 kubectl --context "$context" diff -f -)
+
+if [ -z "${diff_output// }" ]; then
+  diff_output="No changes"
+fi
+
 echo "$diff_output" >> "$GITHUB_OUTPUT"
 echo "EOF" >> "$GITHUB_OUTPUT"
 
 echo "INFO - Running resources diff"
+
 resources_diff=""
 for file in $(/bin/ls "$1" | grep -v kustomization.yaml); do
   resources_diff="$resources_diff$(export | python3 /app/main.py "$1/$file" "$6")"
 done
+
+if [ -z "${resources_diff// }" ]; then
+  resources_diff="No changes"
+fi
 
 echo "resources_diff<<EOF" >>"$GITHUB_OUTPUT"
 echo "$resources_diff" >>"$GITHUB_OUTPUT"
