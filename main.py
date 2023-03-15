@@ -1,3 +1,4 @@
+import re
 import sys
 import os
 import base64
@@ -39,8 +40,10 @@ def parse_yaml_file(yaml_file):
                 'spec', {}).get('sourceRef', {}).get('name')
             dic_values = data.get('spec', {}).get('values', {})
             yaml_values = yaml.dump(dic_values)
+            dic_values_from = data.get('spec', {}).get('valuesFrom', {})
+            yaml_values_from = yaml.dump(dic_values_from)
             if name and namespace and chart_repo and chart_name:
-                return (name, namespace, chart_repo, chart_version, chart_name, yaml_values)
+                return (name, namespace, chart_repo, chart_version, chart_name, yaml_values, yaml_values_from)
             else:
                 return None
         except yaml.YAMLError as exc:
@@ -93,20 +96,28 @@ def add_helm_repo(chart_repo, chart_url, secret=None):
             logger.error(helm_result.stderr.decode("utf-8"))
 
 
-def get_helm_diff(name, chart_repo, chart_name, chart_version, namespace, values):
-    values_command = ['echo', values]
+def get_helm_diff(name, chart_repo, chart_name, chart_version, namespace, values, values_from):
+    cm_values_from = ""
+    yaml_values_from = yaml.safe_load(values_from)
+    for cm in yaml_values_from:
+        cm_name = cm["name"]
+        cm_key =f'.data.{re.escape(cm["valuesKey"])}'
+        cm_values_command = f"kubectl get cm {cm_name} -n {namespace} -o 'jsonpath={{{cm_key}}}'"
+        cm_values = subprocess.Popen(
+            cm_values_command, stdout=subprocess.PIPE, shell=True)
+        cm_values_from = cm_values.communicate()[0].decode()
+    values_command = ['echo', cm_values_from + values]
     substr_command = "perl -pe 's{(?|\$\{([_a-zA-Z]\w*)\}|\$([_a-zA-Z]\w*))}{$ENV{$1}//$&}ge'"
     release_command = f"helm template {name} {chart_repo}/{chart_name} --version {chart_version} -n {namespace} --skip-tests --no-hooks -f -"
     diff_command = f"kubectl diff --server-side=false -n {namespace} -f -"
-
-    values = subprocess.Popen(values_command, stdout=subprocess.PIPE)
+    full_values = subprocess.Popen(values_command, stdout=subprocess.PIPE)
     substr = subprocess.Popen(
-        substr_command, stdin=values.stdout, stdout=subprocess.PIPE, shell=True, env=os.environ.copy())
+        substr_command, stdin=full_values.stdout, stdout=subprocess.PIPE, shell=True, env=os.environ.copy())
     release = subprocess.Popen(
         release_command, stdin=substr.stdout, stdout=subprocess.PIPE, shell=True)
     diff = subprocess.Popen(
         diff_command, stdin=release.stdout, stdout=subprocess.PIPE, shell=True)
-    values.stdout.close()
+    full_values.stdout.close()
     substr.stdout.close()
     release.stdout.close()
     return diff.communicate()[0].decode()
@@ -119,7 +130,7 @@ def main(args):
     parsed_data = parse_yaml_file(yaml_file)
 
     if parsed_data:
-        name, namespace, chart_repo, chart_version, chart_name, values = parsed_data
+        name, namespace, chart_repo, chart_version, chart_name, values, values_from = parsed_data
     else:
         logging.error("Error in parsing the YAML file")
         sys.exit(1)
@@ -130,7 +141,7 @@ def main(args):
                   ['url'], secret=sources_map[chart_repo]['secret'])
 
     diff = get_helm_diff(name, chart_repo, chart_name,
-                         chart_version, namespace, values)
+                         chart_version, namespace, values, values_from)
     print(diff)
 
 
