@@ -1,37 +1,52 @@
 #!/bin/sh -l
 
-if [ "$5" = '' ]; then
-  if [ "$2" = '' ]; then
-    echo "Missing 'server-url' parameter!"
-    exit 1
-  fi
+if [ $7 = false ]; then
+  if [ "$5" = '' ]; then
+    if [ "$2" = '' ]; then
+      echo "Missing 'server-url' parameter!"
+      exit 1
+    fi
 
-  if [ "$3" = '' ]; then
-    echo "Missing 'server-ca' parameter!"
-    exit 1
-  fi
+    if [ "$3" = '' ]; then
+      echo "Missing 'server-ca' parameter!"
+      exit 1
+    fi
 
-  if [ "$4" = '' ]; then
-    echo "Missing 'sa-token' parameter!"
-    exit 1
-  fi
+    if [ "$4" = '' ]; then
+      echo "Missing 'sa-token' parameter!"
+      exit 1
+    fi
 
-  cat /work/ca.crt >ca.crt
-  echo "$3" | base64 -d >ca.crt
-  context="local"
-  kubectl config set-cluster "$context" --server "$2" --certificate-authority ca.crt --embed-certs=true
-  kubectl config set-credentials actions-runner --token "$4"
-  if [ $(echo "$1" | cut -d'/' -f1) = 'platform' || $(echo "$1" | cut -d'/' -f1) = 'infrastructure' ]; then
-    kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace "data-platform"
+    cat /work/ca.crt >ca.crt
+    echo "$3" | base64 -d >ca.crt
+    context="local"
+    kubectl config set-cluster "$context" --server "$2" --certificate-authority ca.crt --embed-certs=true
+    kubectl config set-credentials actions-runner --token "$4"
+    if [ $(echo "$1" | cut -d'/' -f1) = 'platform' || $(echo "$1" | cut -d'/' -f1) = 'infrastructure' ]; then
+      kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace "data-platform"
+    else
+      kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace $(echo "$1" | cut -d'/' -f1)
+    fi
+    kubectl config use-context "$context"
   else
-    kubectl config set-context "$context" --cluster "$context" --user actions-runner --namespace $(echo "$1" | cut -d'/' -f1)
+    mkdir -p ~/.kube
+    echo "$5" | base64 -d >~/.kube/config
+    if [ $(echo "$1" | cut -d'/' -f1) = 'platform' || $(echo "$1" | cut -d'/' -f1) = 'infrastructure' ]; then
+      kubectl config set-context "$context" --namespace "data-platform"
+    else
+      kubectl config set-context "$context" --namespace $(echo "$1" | cut -d'/' -f1)
+    fi
+    context=$(echo "$1" | cut -d'/' -f2)
+    kubectl config use-context "$context"
   fi
-  kubectl config use-context "$context"
 else
   mkdir -p ~/.kube
-  echo "$5" | base64 -d >~/.kube/config
-  context=$(echo "$1" | cut -d'/' -f2)
-  kubectl config use-context "$context"
+  if [ $(echo "$1" | cut -d'/' -f1) = 'platform' || $(echo "$1" | cut -d'/' -f1) = 'infrastructure' ]; then
+    kubectl config set-context "$context" --namespace "data-platform"
+  else
+    kubectl config set-context "$context" --namespace $(echo "$1" | cut -d'/' -f1)
+  fi
+  context=$(kubectl config current-context)
 fi
 
 echo "INFO - Running releases diff"
@@ -69,3 +84,28 @@ fi
 echo "resources_diff<<EOF" >>"$GITHUB_OUTPUT"
 echo "$resources_diff" >>"$GITHUB_OUTPUT"
 echo "EOF" >>"$GITHUB_OUTPUT"
+
+cat <<EOF > diff.md
+Changes on \`$1\` can be see below.
+
+### Helm release diff
+
+<details><summary>Expand</summary>
+
+  \`\`\`diff
+$diff_output
+  \`\`\`
+
+</details>
+
+### Helm resources diff
+
+<details><summary>Expand</summary>
+
+\`\`\`diff
+
+$resources_diff
+\`\`\`
+
+</details>
+EOF

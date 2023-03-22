@@ -8,6 +8,10 @@ Used to output the diff of the resources applied on a cluster.
 
 **Required** The name of the folder where `kustomization.yaml` resides. Default `"."`.
 
+`local_cluster`
+
+**Optional** Wether the action will have local access to the kubernetes cluster. Default `false`.
+
 `sources_folder`
 
 **Optional** The name of the folder where the helm sources resides. Default `"sources"`.
@@ -40,6 +44,7 @@ The resource diffs found.
 uses: actions/k8s-Kustomize-diff-action@v1
 with:
   kustomize_folder: example/folder
+  local_cluster: false
   sources_folder: sources
   server-url: https://example.local
   server-ca: <ca_b64_encoded>
