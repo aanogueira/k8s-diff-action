@@ -40,7 +40,7 @@ outputs:
     description: 'Helm Resources diff'
 runs:
   using: 'docker'
-  image: 'aanogueira/helm-resources-diff:0.1.0'
+  image: 'docker://aanogueira/helm-resources-diff:0.1.0'
   args:
     - ${{ inputs.kustomize_folder }}
     - ${{ inputs.server-url }}
