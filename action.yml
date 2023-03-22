@@ -8,6 +8,11 @@ inputs:
     description: 'Folder from where kustomization.yaml resides'
     required: true
     default: '.'
+  local_cluster:
+    description: 'Wether the action will have local access to the kubernetes cluster'
+    required: false
+    default: false
+    type: bool
   sources_folder:
     description: 'Folder from where helm sources resides'
     required: false
@@ -43,3 +48,4 @@ runs:
     - ${{ inputs.sa-token }}
     - ${{ inputs.kubeconfig }}
     - ${{ inputs.sources_folder }}
+    - ${{ inputs.local_cluster }}
