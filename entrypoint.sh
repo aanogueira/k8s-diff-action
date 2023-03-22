@@ -84,28 +84,3 @@ fi
 echo "resources_diff<<EOF" >>"$GITHUB_OUTPUT"
 echo "$resources_diff" >>"$GITHUB_OUTPUT"
 echo "EOF" >>"$GITHUB_OUTPUT"
-
-cat <<EOF > diff.md
-Changes on \`$1\` can be see below.
-
-### Helm release diff
-
-<details><summary>Expand</summary>
-
-  \`\`\`diff
-$diff_output
-  \`\`\`
-
-</details>
-
-### Helm resources diff
-
-<details><summary>Expand</summary>
-
-\`\`\`diff
-
-$resources_diff
-\`\`\`
-
-</details>
-EOF
